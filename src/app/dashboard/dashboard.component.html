@@ -1,53 +1,50 @@
-<!-- <p>
-  {{placeholderText}} - {{user.displayName}}
-</p> -->
-
 <button (click)="loginWithGoogle()">Login with Google</button>
 <button (click)="displayBadPayers()">DisplayAfterLogin</button>
 <button (click)="displayBalantaConturi()">DisplayAfterLogin</button>
 
 <div class="panel panel-default">
   <div class="panel-heading">Informatii rau platnici</div>
-  <table class="table table-striped" [mfData]="data | dataFilter : filterQuery" #mf="mfDataTable"
-        [mfRowsOnPage]="rowsOnPage" [(mfSortBy)]="sortBy" [(mfSortOrder)]="sortOrder">
+  <table class="table table-striped" >
           <thead>
               <tr>
                   <th colspan="5">
                       Filter by name:
-                       <input class="form-control" [(ngModel)]="filterQuery"/> 
+                       <input class="form-control" [(ngModel)]="listFilter"/> 
                   </th>
               </tr>
             <tr>
-              <th><mfDefaultSorter by="id">Id</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="cnp">CNP</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="ci">CI</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="nume">Nume</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="prenume">Prenume</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="domiciliu">Domiciliu</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="numar">Numar</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="strada">Strada</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="denumire">Denumire CAR</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="data">Data</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="restanta">Restanta</mfDefaultSorter></th>
-              <th><mfDefaultSorter by="valoarea">Valoarea imprumutata</mfDefaultSorter></th>
+              <th>Id</th>
+              <th>CNP</th>
+              <th>CI</th>
+              <th>Nume</th>
+              <th>Prenume</th>
+              <th>Domiciliu</th>
+              <th>Numar</th>
+              <th>Strada</th>
+              <th>Denumire CAR</th>
+              <th>Data</th>
+              <th>Restanta</th>
+              <th>Valoarea imprumutata</th>
             </tr>
-           
         </thead>
-          <tbody>
-            <tr *ngFor="let badPayer of badPayers | async; let i = index">
-              <td>{{badPayer.Id}}</td>
-              <td>{{badPayer.CNP}}</td>
-              <td>{{badPayer.CI}}</td>
-              <td>{{badPayer.Nume}}</td>
-              <td>{{badPayer.Prenume}}</td>
-              <td>{{badPayer.Domiciliu}}</td>
-              <td>{{badPayer.Numar}}</td>
-              <td>{{badPayer.Strada}}</td>
-              <td>{{badPayer.DenCAR}}</td>
-              <td>{{badPayer.Data | date:"MM/dd/yy"}}</td>
-              <td>{{badPayer.Restanta}}</td>
-              <td>{{badPayer.ValImprumut}}</td>
-            </tr>
+
+        <tbody>
+          <tr *ngFor="let badPayer of filteredBadPayersList | paginate: { itemsPerPage: 5, currentPage: p}">
+            <td>{{badPayer.Id}}</td>
+            <td>{{badPayer.CNP}}</td>
+            <td>{{badPayer.CI}}</td>
+            <td>{{badPayer.Nume}}</td>
+            <td>{{badPayer.Prenume}}</td>
+            <td>{{badPayer.Domiciliu}}</td>
+            <td>{{badPayer.Numar}}</td>
+            <td>{{badPayer.Strada}}</td>
+            <td>{{badPayer.DenCAR}}</td>
+            <td>{{badPayer.Data | date:"MM/dd/yy"}}</td>
+            <td>{{badPayer.Restanta}}</td>
+            <td>{{badPayer.ValImprumut}}</td>
+          </tr>
+          
+          <pagination-controls (pageChange)="p=$event" ></pagination-controls>
         </tbody>
 
         <tbody>
@@ -56,18 +53,10 @@
                
               <td>{{balantaConturi.SoldCredit}}</td>
             </tr>
-        </tbody>
-
-
-         <tfoot>
-                <tr>
-                    <td colspan="5">
-                        <mfBootstrapPaginator [rowsOnPageSet]="[5,10,15]"></mfBootstrapPaginator>
-                    </td>
-                </tr>
-                </tfoot>
-        </table>
+        </tbody>        
+  </table>
 </div>
+
 
 <div class="row">
   <div class="col-md-6">

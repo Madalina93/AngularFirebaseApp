@@ -4,7 +4,7 @@ import { FormsModule }   from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-
+import {NgxPaginationModule} from 'ngx-pagination';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
@@ -23,14 +23,15 @@ FusionChartsModule.fcRoot(FusionCharts, Charts, FintTheme);
 
 import { ChartsModule } from 'ng2-charts';
 import { DataTableModule } from "angular2-datatable";
-import { DataFilterPipe }   from './dashboard/dashboard.component.pipe';
+ 
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
     LoginComponent,
-    DataFilterPipe
+    
   ],
   imports: [
     BrowserModule,
@@ -40,7 +41,9 @@ import { DataFilterPipe }   from './dashboard/dashboard.component.pipe';
     AngularFireAuthModule,
     FusionChartsModule,
     ChartsModule,
-    DataTableModule
+    DataTableModule,
+    Ng2SearchPipeModule,
+    NgxPaginationModule
   ],
   providers: [
     AuthService,

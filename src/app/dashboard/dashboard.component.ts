@@ -5,7 +5,9 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable  
 import * as firebase from 'firebase/app';
 import { ChartLine } from './chartLine';
 import {DataTableModule} from "angular2-datatable";
-import { DataFilterPipe }   from './dashboard.component.pipe';
+import {NgxPaginationModule} from 'ngx-pagination';
+import { BadPayer } from './badPayer';
+
 @Component({
   selector: 'dashboard',
   templateUrl: './dashboard.component.html',
@@ -18,7 +20,7 @@ export class DashboardComponent implements OnInit {
   public filterQuery = "";
   user = null;
 
-  public lineChartLabels:Array<any> = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie','Noiembrie','Decembrie'];
+  //public lineChartLabels:Array<any> = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie','Noiembrie','Decembrie'];
   public lineChartOptions:any = {
     responsive: true
   };
@@ -83,6 +85,7 @@ export class DashboardComponent implements OnInit {
       });
 
       this.badPayers = this.db.list('/users/BadPayers');
+      this.badPayers.subscribe(snapshot => this.snapshotToArray(snapshot));
   }
 
   displayBalantaConturi() {
@@ -115,21 +118,29 @@ export class DashboardComponent implements OnInit {
   }
 
   badPayers: FirebaseListObservable<any[]>;
-  // filteredBadPayers: FirebaseListObservable<any[]>;
-  // _listFilter: string;
-  // get listFilter(): string {
-  //     return this._listFilter;
-  // }
-  // set listFilter(value: string) {
-  //     this._listFilter = value;
-  //     this.filteredBadPayers = this.listFilter ? this.performFilter(this.listFilter) : this.badPayers;
-  // }
+  badPayersList: Array<BadPayer> = new Array<BadPayer>();
+  filteredBadPayersList: Array<BadPayer> = new Array<BadPayer>();
+  _listFilter: string;
+  get listFilter(): string {
+      return this._listFilter;
+  }
+  set listFilter(value: string) {
+      this._listFilter = value;
+      this.filteredBadPayersList = this.listFilter ? this.performFilter(this.listFilter) : this.badPayersList;
+  }
 
-  // performFilter(filterBy: string): FirebaseListObservable<any[]> {
-  //   filterBy = filterBy.toLocaleLowerCase();
-  //   return this.badPayers.filter((badPayer: any) =>
-  //       badPayer.name.toLocaleLowerCase().indexOf(filterBy) !== -1
-  //     );
-  //   }
-  // }
+  private snapshotToArray(snapshot) {
+    this.badPayersList = new Array<BadPayer>();
+    snapshot.forEach(childSnapshot => {
+        this.badPayersList.push(childSnapshot);
+    });
+    this.filteredBadPayersList = this.badPayersList;
+  };
+
+  private performFilter(filterBy: string): Array<any> {
+    filterBy = filterBy.toLocaleLowerCase();
+    return this.badPayersList.filter((badPayer: any) =>
+        badPayer.Nume.toLocaleLowerCase().indexOf(filterBy) !== -1
+      );
+  }
 }
