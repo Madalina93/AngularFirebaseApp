@@ -7,20 +7,25 @@ import { ChartLine } from './chartLine';
 import {DataTableModule} from "angular2-datatable";
 import {NgxPaginationModule} from 'ngx-pagination';
 import { BadPayer } from './badPayer';
+import { forEach } from '@firebase/util';
 
 @Component({
   selector: 'dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
 })
 
 export class DashboardComponent implements OnInit {
   balantaConturii: FirebaseListObservable<any[]>;
+  rapoartes: FirebaseListObservable<any[]>;
   placeholderText = "dashboard works";
   public filterQuery = "";
   user = null;
+ 
+  
+  
 
-  //public lineChartLabels:Array<any> = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie','Noiembrie','Decembrie'];
+  public lineChartLabels:Array<any> = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie','Noiembrie','Decembrie'];
   public lineChartOptions:any = {
     responsive: true
   };
@@ -67,8 +72,8 @@ export class DashboardComponent implements OnInit {
       
       this.chartLines = new Array<ChartLine>();
 
-      this.chartLines[0] = { label:'Rau Platnici', data: [this.balantaConturii, 60] } as ChartLine;
-      this.chartLines[1] = { label:'Total Restante', data: [28, 48, 40, 19, 86, 27, 90, 91, 92, 93, 94] } as ChartLine;
+      this.chartLines[0] = { label:'Activi la inceput', data: [20,58,89] } as ChartLine;
+      this.chartLines[1] = { label:'Activi la sfarsit', data: [28, 48, 40, 19, 86, 27, 90, 91, 92, 93, 94] } as ChartLine;
   }
 
   loginWithGoogle() {
@@ -86,6 +91,15 @@ export class DashboardComponent implements OnInit {
 
       this.badPayers = this.db.list('/users/BadPayers');
       this.badPayers.subscribe(snapshot => this.snapshotToArray(snapshot));
+
+      var rapoarte = this.db.list('/rapoarte');
+      rapoarte.subscribe(snapshot => {
+        this.pieChartData = new Array<any>();
+        snapshot.forEach(childSnapshot => {
+            this.pieChartData.push(childSnapshot.ActiviLaInceput);
+            this.pieChartData.push(childSnapshot.ActiviLaSfarsit);
+        });
+      })
   }
 
   displayBalantaConturi() {
@@ -95,6 +109,16 @@ export class DashboardComponent implements OnInit {
       });
 
       this.balantaConturii = this.db.list('/balantaConturi');
+  }
+
+  displayRapoarte() {
+    this.auth.getAuthState().subscribe(
+      (user) => {
+        this.user = user;
+      });
+
+      this.rapoartes = this.db.list('/rapoarte');
+      //pt fiecare activLaInceput 
   }
  
   // public randomize():void {
@@ -129,7 +153,7 @@ export class DashboardComponent implements OnInit {
       this.filteredBadPayersList = this.listFilter ? this.performFilter(this.listFilter) : this.badPayersList;
   }
 
-  private snapshotToArray(snapshot) {
+  private snapshotToArray(snapshot) { 
     this.badPayersList = new Array<BadPayer>();
     snapshot.forEach(childSnapshot => {
         this.badPayersList.push(childSnapshot);
@@ -143,4 +167,16 @@ export class DashboardComponent implements OnInit {
         badPayer.Nume.toLocaleLowerCase().indexOf(filterBy) !== -1
       );
   }
+
+  public pieChartLabels:string[] = ['Nume', 'Credit', 'Debit'];
+  public pieChartData: any[];
+  public pieChartType:string = 'pie';
+ 
+
+  private takeData() {
+    //this.badPayersList = new Array<BadPayer>();
+    this.badPayersList.forEach(a=>a.ValImprumut.length.toString() > '1');
+    return this.badPayersList;
+  }
 }
+

@@ -26,12 +26,12 @@ import { DataTableModule } from "angular2-datatable";
  
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
+
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
-    LoginComponent,
-    
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -44,6 +44,7 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
     DataTableModule,
     Ng2SearchPipeModule,
     NgxPaginationModule
+    
   ],
   providers: [
     AuthService,

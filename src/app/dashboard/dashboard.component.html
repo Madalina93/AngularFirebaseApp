@@ -1,6 +1,7 @@
 <button (click)="loginWithGoogle()">Login with Google</button>
 <button (click)="displayBadPayers()">DisplayAfterLogin</button>
 <button (click)="displayBalantaConturi()">DisplayAfterLogin</button>
+<button (click)="displayRapoarte()">DisplayAfterLogin</button>
 
 <div class="panel panel-default">
   <div class="panel-heading">Informatii rau platnici</div>
@@ -53,7 +54,13 @@
                
               <td>{{balantaConturi.SoldCredit}}</td>
             </tr>
-        </tbody>        
+        </tbody>   
+        <tbody>
+          <tr *ngFor="let rapoarte of rapoartes | async; let i = index">
+            <td>{{rapoarte.ActiviLaInceput}}</td>
+             
+          </tr>
+      </tbody>        
   </table>
 </div>
 
@@ -61,6 +68,7 @@
 <div class="row">
   <div class="col-md-6">
       <canvas baseChart style="display: flex;"
+        [data]="pieChartData"
         [datasets]="chartLines"
         [labels]="lineChartLabels"
         [options]="lineChartOptions"
@@ -70,15 +78,25 @@
         (chartHover)="chartHovered($event)"
         (chartClick)="chartClicked($event)"></canvas>
   </div>
-  <div class="col-md-6" style="margin-bottom: 10px">
+  <!-- <div class="col-md-6" style="margin-bottom: 10px">
     <table class="table table-responsive table-condensed">
       <tr>
         <th *ngFor="let label of lineChartLabels">{{label}}</th>
       </tr>
-      <tr *ngFor="let d of chartLine">
-        <td *ngFor="let label of lineChartLabels; let j=index">{{d && d.data[j]}}</td>
+      <tr *ngFor="let d of pieChartData">
+        <td>{{d}}</td>
+         <td *ngFor="let label of lineChartLabels; let j=index">{{d && d.data[j]}}</td> 
       </tr>
     </table>
-    <!-- <button (click)="randomize()">CLICK</button> -->
-  </div>
+    <button (click)="randomize()">CLICK</button> 
+  </div>--> 
 </div>
+
+<!-- <div style="display: block">
+  <canvas baseChart
+          [data]="pieChartData"
+          [labels]="pieChartLabels"
+          [chartType]="pieChartType"
+          (chartHover)="chartHovered($event)"
+          (chartClick)="chartClicked($event)"></canvas>
+</div> -->
