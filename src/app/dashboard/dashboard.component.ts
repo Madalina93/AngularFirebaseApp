@@ -17,6 +17,7 @@ import { forEach } from '@firebase/util';
 
 export class DashboardComponent implements OnInit {
   balantaConturii: FirebaseListObservable<any[]>;
+  solduri: FirebaseListObservable<any[]>;
   rapoartes: FirebaseListObservable<any[]>;
   placeholderText = "dashboard works";
   public filterQuery = "";
@@ -25,7 +26,10 @@ export class DashboardComponent implements OnInit {
   
   
 
-  public lineChartLabels:Array<any> = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie','Noiembrie','Decembrie'];
+  public lineChartLabels:Array<any> = [];
+  public barChartLabels:Array<any> = [];
+  public barChartData: Array<any> =[];
+  public barChartType:string = 'bar';
   public lineChartOptions:any = {
     responsive: true
   };
@@ -66,14 +70,11 @@ export class DashboardComponent implements OnInit {
     }
 
   ngOnInit() {
-    
-      // firebase call -> aduce toti rau platnicii
-      // => statisticiRauPlatnici; 
       
       this.chartLines = new Array<ChartLine>();
 
-      this.chartLines[0] = { label:'Activi la inceput', data: [20,58,89] } as ChartLine;
-      this.chartLines[1] = { label:'Activi la sfarsit', data: [28, 48, 40, 19, 86, 27, 90, 91, 92, 93, 94] } as ChartLine;
+      this.chartLines[0] = { label:'Utilizatori activi', data: [] } as ChartLine;
+     // this.chartLines[1] = { label:'Activi la sfarsit', data: [] } as ChartLine;
   }
 
   loginWithGoogle() {
@@ -92,14 +93,71 @@ export class DashboardComponent implements OnInit {
       this.badPayers = this.db.list('/users/BadPayers');
       this.badPayers.subscribe(snapshot => this.snapshotToArray(snapshot));
 
+      // var rapoarte = this.db.list('/rapoarte');
+      // rapoarte.subscribe(snapshot => {
+      //   this.lineChartData = new Array<any>();
+      //   var tempLineChartData = new Array<any>();
+      //   var tempLineChartLabels = new Array<any>();
+      //   snapshot.forEach(childSnapshot => {
+      //       this.lineChartData.push(childSnapshot.ActiviLaSfarsit);
+      //       this.lineChartLabels.push(new Date(childSnapshot.DataSfarsit).toLocaleDateString());
+      //       this.lineChartDataSfarsit.push(childSnapshot.ActiviLaSfarsit);
+      //   });
+
+      //   this.lineChartLabels = this.lineChartLabels.sort((x, y) => {
+      //     if(x > y) return 1;
+      //     else if (x < y) return -1;
+      //     else return 0;
+      //   });
+      // })
+
       var rapoarte = this.db.list('/rapoarte');
       rapoarte.subscribe(snapshot => {
-        this.pieChartData = new Array<any>();
+        var tempLineChartData = new Array<any>();
         snapshot.forEach(childSnapshot => {
-            this.pieChartData.push(childSnapshot.ActiviLaInceput);
-            this.pieChartData.push(childSnapshot.ActiviLaSfarsit);
+          tempLineChartData.push({
+            Valoare: childSnapshot.ActiviLaInceput,
+            Data: new Date(childSnapshot.DataInceput),
+          });
+          // tempLineChartData.push({
+          //   Valoare: childSnapshot.ActiviLaSfarsit,
+          //   Data: new Date(childSnapshot.DataSfarsit),
+          // });
         });
+
+        tempLineChartData = tempLineChartData.sort((a, b) => {
+            var ta = a.Data.getTime();
+            var tb = b.Data.getTime();
+            return ta - tb;
+        });
+
+        this.lineChartData = new Array<any>();
+        tempLineChartData.forEach(lcd => {
+          this.lineChartData.push(lcd.Valoare);
+          this.lineChartLabels.push(lcd.Data.toLocaleDateString());
+        });
+         
       })
+
+      // var solduri = this.db.list('/balantaConturi');
+      // solduri.subscribe(snapshot => {
+      //   var balantaCont = new  Array<any>();
+      //   snapshot.forEach(childSnapshot => {
+      //     balantaCont.push({ 
+      //       Credit: childSnapshot.SoldCredit,
+      //       Debit: childSnapshot.SoldDebit,
+      //       Data: new Date(childSnapshot.Data).toLocaleDateString()
+      //     });
+      //   })
+      //   this.barChartData = new Array<any>();
+      // balantaCont.forEach(lcd => {
+      //     this.barChartData.push(lcd.Credit);
+      //    this.barChartData.push(lcd.Debit);
+      //    this.barChartLabels.push(lcd.Data);
+      //   });
+      // });
+      
+      //pieChartData
   }
 
   displayBalantaConturi() {
@@ -120,17 +178,6 @@ export class DashboardComponent implements OnInit {
       this.rapoartes = this.db.list('/rapoarte');
       //pt fiecare activLaInceput 
   }
- 
-  // public randomize():void {
-  //   let _lineChartData:Array<any> = new Array(this.lineChartData.length);
-  //   for (let i = 0; i < this.lineChartData.length; i++) {
-  //     _lineChartData[i] = {data: new Array(this.lineChartData[i].data.length), label: this.lineChartData[i].label};
-  //     for (let j = 0; j < this.lineChartData[i].data.length; j++) {
-  //       _lineChartData[i].data[j] = Math.floor((Math.random() * 100) + 1);
-  //     }
-  //   }
-  //   this.lineChartData = _lineChartData;
-  // }
  
   // events
   public chartClicked(e:any):void {
@@ -168,15 +215,11 @@ export class DashboardComponent implements OnInit {
       );
   }
 
-  public pieChartLabels:string[] = ['Nume', 'Credit', 'Debit'];
-  public pieChartData: any[];
-  public pieChartType:string = 'pie';
- 
+  public lineChartDataBalanta:Array<any>[];
+  public lineChartData: any[];
+  public lineChartTypeBalanta:string = 'line';
+  public pieChartData:Array<any> = [];
 
-  private takeData() {
-    //this.badPayersList = new Array<BadPayer>();
-    this.badPayersList.forEach(a=>a.ValImprumut.length.toString() > '1');
-    return this.badPayersList;
-  }
+ 
 }
 

@@ -25,13 +25,17 @@ import { ChartsModule } from 'ng2-charts';
 import { DataTableModule } from "angular2-datatable";
  
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { Menu } from './app/menu.component/menu.component.component';
+import { MenuComponent } from './menu/menu.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
-    LoginComponent
+    LoginComponent,
+    Menu.ComponentComponent,
+    MenuComponent
   ],
   imports: [
     BrowserModule,
