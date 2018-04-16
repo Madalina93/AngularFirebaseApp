@@ -1,6 +1,7 @@
 <button (click)="loginWithGoogle()">Login with Google</button>
 <button (click)="displayBadPayers()">DisplayAfterLogin</button>
-<button (click)="displayBalantaConturi()">DisplayAfterLogin</button>
+<!-- <button (click)="displayBalantaConturi()">DisplayAfterLogin</button>
+<button (click)="displayRapoarte()">DisplayAfterLogin</button> -->
 
 <div class="panel panel-default">
   <div class="panel-heading">Informatii rau platnici</div>
@@ -29,7 +30,7 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let badPayer of filteredBadPayersList | paginate: { itemsPerPage: 5, currentPage: p}">
+          <tr *ngFor="let badPayer of filteredBadPayersList | paginate: { itemsPerPage: 1, currentPage: p}">
             <td>{{badPayer.Id}}</td>
             <td>{{badPayer.CNP}}</td>
             <td>{{badPayer.CI}}</td>
@@ -53,7 +54,13 @@
                
               <td>{{balantaConturi.SoldCredit}}</td>
             </tr>
-        </tbody>        
+        </tbody>   
+        <tbody>
+          <tr *ngFor="let rapoarte of rapoartes | async; let i = index">
+            <td>{{rapoarte.ActiviLaInceput}}</td>
+             
+          </tr>
+      </tbody>        
   </table>
 </div>
 
@@ -61,6 +68,7 @@
 <div class="row">
   <div class="col-md-6">
       <canvas baseChart style="display: flex;"
+        [data]="lineChartData"
         [datasets]="chartLines"
         [labels]="lineChartLabels"
         [options]="lineChartOptions"
@@ -69,16 +77,6 @@
         [chartType]="lineChartType"
         (chartHover)="chartHovered($event)"
         (chartClick)="chartClicked($event)"></canvas>
-  </div>
-  <div class="col-md-6" style="margin-bottom: 10px">
-    <table class="table table-responsive table-condensed">
-      <tr>
-        <th *ngFor="let label of lineChartLabels">{{label}}</th>
-      </tr>
-      <tr *ngFor="let d of chartLine">
-        <td *ngFor="let label of lineChartLabels; let j=index">{{d && d.data[j]}}</td>
-      </tr>
-    </table>
-    <!-- <button (click)="randomize()">CLICK</button> -->
-  </div>
+  </div> 
 </div>
+
